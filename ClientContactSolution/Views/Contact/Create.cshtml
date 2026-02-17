@@ -1,29 +1,133 @@
 ﻿@model ClientContactSolution.Models.Contact
+@using ClientContactSolution.Models
 
 <h2>Create Contact</h2>
 
-@using (Html.BeginForm())
-{
-    <div class="tab">
-        <button type="button" onclick="openTab(event,'General')" class="active">General</button>
-        <button type="button" onclick="openTab(event,'Clients')">Client(s)</button>
+<form id="contactForm" class="needs-validation" novalidate>
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label">Name *</label>
+        <input asp-for="Name" class="form-control" />
+        <span class="text-danger field-validation" data-valmsg-for="Name"></span>
     </div>
 
-    <div id="General" class="tabcontent" style="display:block;">
-        <label>Name *</label>
-        @Html.TextBoxFor(m => m.Name, new { @class = "input-field" })
-
-        <label>Surname *</label>
-        @Html.TextBoxFor(m => m.Surname, new { @class = "input-field" })
-
-        <label>Email *</label>
-        @Html.TextBoxFor(m => m.Email, new { @class = "input-field", type = "email" })
+    <div class="mb-3">
+        <label asp-for="Surname" class="form-label">Surname *</label>
+        <input asp-for="Surname" class="form-control" />
+        <span class="text-danger field-validation" data-valmsg-for="Surname"></span>
     </div>
 
-    <div id="Clients" class="tabcontent">
-        <p>No contact(s) found.</p>
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label">Email *</label>
+        <input asp-for="Email" class="form-control" />
+        <span class="text-danger field-validation" data-valmsg-for="Email"></span>
     </div>
 
-    <br />
-    <button type="submit" class="button">Save</button>
+    <button type="submit" class="btn btn-success">Save</button>
+</form>
+
+<hr />
+
+<h3>Saved Contacts</h3>
+<table class="table table-striped table-bordered" id="contactsTable">
+    <thead class="table-dark">
+        <tr>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Email</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.Contacts != null)
+        {
+            foreach (var contact in (IEnumerable<Contact>)ViewBag.Contacts)
+            {
+                <tr data-id="@contact.Id">
+                    <td>@contact.Name</td>
+                    <td>@contact.Surname</td>
+                    <td>@contact.Email</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm delete-btn">Delete</button>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        $(document).ready(function () {
+
+            // AJAX Save
+            $('#contactForm').submit(function (e) {
+                e.preventDefault();
+                $('.field-validation').text('');
+
+                var form = $(this);
+
+                $.ajax({
+                    url: '@Url.Action("CreateAjax", "Contact")',
+                    type: 'POST',
+                    data: form.serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            form.trigger("reset");
+
+                            var newRow = `<tr data-id="${response.data.Id}">
+                                <td>${response.data.Name}</td>
+                                <td>${response.data.Surname}</td>
+                                <td>${response.data.Email}</td>
+                                <td><button class="btn btn-danger btn-sm delete-btn">Delete</button></td>
+                            </tr>`;
+                            $('#contactsTable tbody').append(newRow);
+                        } else {
+                            if (response.errors) {
+                                $.each(response.errors, function (field, message) {
+                                    $(`.field-validation[data-valmsg-for='${field}']`).text(message);
+                                });
+                            } else {
+                                alert(response.message);
+                            }
+                        }
+                    },
+                    error: function () {
+                        alert("An error occurred while saving.");
+                    }
+                });
+            });
+
+            // AJAX Delete
+            $('#contactsTable').on('click', '.delete-btn', function () {
+                var row = $(this).closest('tr');
+                var contactId = row.data('id');
+
+                if (!contactId) return;
+
+                $.ajax({
+                    url: '@Url.Action("DeleteAjax", "Contact")',
+                    type: 'POST',
+                    data: {
+                        id: contactId,
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            row.remove();
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function () {
+                        alert("An error occurred while deleting.");
+                    }
+                });
+            });
+        });
+    </script>
 }

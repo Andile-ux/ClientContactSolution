@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ClientContactSolution.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
