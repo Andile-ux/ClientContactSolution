@@ -1,0 +1,38 @@
+﻿@model List<ClientContactSolution.Models.Contact>
+
+<h2>Contacts</h2>
+
+<a href="/Contact/Create" class="button">+ New Contact</a>
+
+<br />
+<br />
+
+@if (!Model.Any())
+{
+    <p><b>No contact(s) found.</b></p>
+}
+else
+{
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Email</th>
+            <th class="center">No. of linked clients</th>
+            <th></th>
+        </tr>
+
+        @foreach (var contact in Model)
+        {
+            <tr>
+                <td>@contact.Name</td>
+                <td>@contact.Surname</td>
+                <td>@contact.Email</td>
+                <td class="center">@contact.ClientContacts.Count()</td>
+                <td>
+                    <a href="/Contact/Edit/@contact.Id" class="button">Edit</a>
+                </td>
+            </tr>
+        }
+    </table>
+}

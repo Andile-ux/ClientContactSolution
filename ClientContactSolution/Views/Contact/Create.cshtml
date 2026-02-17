@@ -1,0 +1,29 @@
+﻿@model ClientContactSolution.Models.Contact
+
+<h2>Create Contact</h2>
+
+@using (Html.BeginForm())
+{
+    <div class="tab">
+        <button type="button" onclick="openTab(event,'General')" class="active">General</button>
+        <button type="button" onclick="openTab(event,'Clients')">Client(s)</button>
+    </div>
+
+    <div id="General" class="tabcontent" style="display:block;">
+        <label>Name *</label>
+        @Html.TextBoxFor(m => m.Name, new { @class = "input-field" })
+
+        <label>Surname *</label>
+        @Html.TextBoxFor(m => m.Surname, new { @class = "input-field" })
+
+        <label>Email *</label>
+        @Html.TextBoxFor(m => m.Email, new { @class = "input-field", type = "email" })
+    </div>
+
+    <div id="Clients" class="tabcontent">
+        <p>No contact(s) found.</p>
+    </div>
+
+    <br />
+    <button type="submit" class="button">Save</button>
+}

@@ -1,0 +1,40 @@
+﻿@model ClientContactSolution.Models.Client
+
+<h2>Create Client</h2>
+
+@using (Html.BeginForm())
+{
+    <div class="tab">
+        <button type="button" onclick="openTab(event,'General')" class="active">General</button>
+        <button type="button" onclick="openTab(event,'Contacts')">Contact(s)</button>
+    </div>
+
+    <div id="General" class="tabcontent" style="display:block;">
+        <label>Name *</label>
+        @Html.TextBoxFor(m => m.Name, new { @class = "input-field" })
+        @Html.ValidationMessageFor(m => m.Name)
+    </div>
+
+    <div id="Contacts" class="tabcontent">
+        <p>No contacts found.</p>
+    </div>
+
+    <br />
+    <button type="submit" class="button">Save</button>
+}
+
+<script>
+    function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++)
+            tabcontent[i].style.display = "none";
+
+        tablinks = document.getElementsByTagName("button");
+        for (i = 0; i < tablinks.length; i++)
+            tablinks[i].classList.remove("active");
+
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.classList.add("active");
+    }
+</script>

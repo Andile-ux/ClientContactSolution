@@ -1,0 +1,54 @@
+﻿@model ClientContactSolution.Models.Contact
+
+<h2>Edit Contact</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(m => m.Id)
+
+    <div class="tab">
+        <button type="button" onclick="openTab(event,'General')" class="active">General</button>
+        <button type="button" onclick="openTab(event,'Clients')">Client(s)</button>
+    </div>
+
+    <div id="General" class="tabcontent" style="display:block;">
+        <label>Name *</label>
+        @Html.TextBoxFor(m => m.Name, new { @class = "input-field" })
+
+        <label>Surname *</label>
+        @Html.TextBoxFor(m => m.Surname, new { @class = "input-field" })
+
+        <label>Email *</label>
+        @Html.TextBoxFor(m => m.Email, new { @class = "input-field", type = "email" })
+    </div>
+
+    <div id="Clients" class="tabcontent">
+        @if (!Model.ClientContacts.Any())
+        {
+            <p>No contact(s) found.</p>
+        }
+        else
+        {
+            <table>
+                <tr>
+                    <th>Client Name</th>
+                    <th>Client Code</th>
+                    <th></th>
+                </tr>
+                @foreach (var link in Model.ClientContacts)
+                {
+                    <tr>
+                        <td>@link.Client.Name</td>
+                        <td>@link.Client.ClientCode</td>
+                        <td>
+                            <a href="/Contact/UnlinkClient/@link.Id">Unlink</a>
+                        </td>
+                    </tr>
+                }
+            </table>
+        }
+    </div>
+
+    <br />
+    <button type="submit" class="button">Update</button>
+}
